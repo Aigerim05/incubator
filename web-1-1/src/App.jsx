@@ -80,7 +80,7 @@ function App() {
         return () => clearInterval(interval); 
       
         
-    }, [isRunning, count, isButtonDisabled, name, duration]); 
+    }, [isRunning, count, name, duration]);
 
   const handleStart = () =>{
     setCount(duration)
@@ -96,13 +96,14 @@ function App() {
     setIsRunning(false)
     setShowMessage(false)
     setIsButtonDisabled(false)
+    setDuration(0)
   }
 
   const handleRetake = () =>{
-    setCount(10)
+    setCount(duration)
     setProgress(100)
     setIsRunning(true)
-    setIsButtonDisabled(false)
+    setIsButtonDisabled(true)
     setShowMessage(false)
     setPoints(0)
   }
@@ -114,55 +115,28 @@ function App() {
   return (
     <ThemeContext.Provider value={themes[theme]}>
       <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',       
-          justifyContent: 'center',   
-          background: themes[theme].background,
-          transition: 'all 0.3s ease',
-        }}
+        className="app-container"
+        style={{ background: themes[theme].background }}
       >
         <button
           onClick={toggleTheme}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            padding: '10px 20px',
-            borderRadius: '20px',
-            border: 'none',
-            background: themes[theme].buttonGradient,
-            color: '#fff',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-          }}
+          className="theme-button"
+          style={{ background: themes[theme].buttonGradient }}
         >
           {theme === 'light' ? '😈' : '☀️'}
         </button>
 
-        <h2 style={{
-          fontFamily: 'Comic Sans MS, Comic Sans, cursive',
-          color: themes[theme].text,
-          textShadow: '1px 1px 0 #fff, 2px 2px 4px #ffb6c1',
-        }}>Enter your name:</h2>
+        <h2 className="title" style={{ color: themes[theme].text }}>
+          Enter your name:
+        </h2>
 
         <input 
           placeholder="Type your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="input-field"
           style={{
-            padding: '10px',
-            fontSize: '16px',
-            width: '250px',
-            textAlign: 'center',
-            marginBottom: '10px',
-            borderRadius: '20px',
             border: `2px solid ${themes[theme].inputBorder}`,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            outline: 'none',
             background: themes[theme].inputBg,
             color: themes[theme].text,
           }}
@@ -172,107 +146,44 @@ function App() {
           placeholder="Type duration in seconds"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
+          className="input-field"
           style={{
-            padding: '10px',
-            fontSize: '16px',
-            width: '250px',
-            textAlign: 'center',
-            marginBottom: '10px',
-            borderRadius: '20px',
             border: `2px solid ${themes[theme].inputBorder}`,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            outline: 'none',
             background: themes[theme].inputBg,
             color: themes[theme].text,
           }}
         />
 
-        <p style={{
-          color: themes[theme].text,
-          fontWeight: 'bold',
-          fontSize: '18px',
-          textShadow: '1px 1px 0 #fff',
-        }}>Number of candies you got: {points}</p>
+        <p className="points-text" style={{ color: themes[theme].text }}>
+          Number of candies you got: {points}
+        </p>
 
         {isRunning && (
-          <div style={{
-            width: '400px',
-            height: '28px',
-            background: themes[theme].progressBg,
-            borderRadius: '20px',
-            marginBottom: '20px',
-            overflow: 'hidden',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-            border: '2px solid #fff',
-            position: 'relative',
-          }}>
-            <div style={{
-              width: `${progress}%`,
-              height: '100%',
-              background: themes[theme].progressFill,
-              borderRadius: '20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              transition: 'width 1s linear',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              zIndex: 1,
-            }} />
-            <div style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              left: 0,
-              top: 0,
-              zIndex: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontWeight: 'bold',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
-              pointerEvents: 'none',
-              fontFamily: 'Comic Sans MS, Comic Sans, cursive',
-            }}>{count} сек</div>
+          <div className="progress-container" style={{ background: themes[theme].progressBg }}>
+            <div 
+              className="progress-bar"
+              style={{ 
+                width: `${progress}%`,
+                background: themes[theme].progressFill 
+              }} 
+            />
+            <div className="progress-text">{count} сек</div>
           </div>
         )}
 
         <button
           onClick={handleStart}
           disabled={isButtonDisabled}
-          style={{
-            padding: '12px 28px',
-            fontSize: '18px',
-            cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
-            borderRadius: '20px',
-            border: 'none',
-            background: themes[theme].buttonGradient,
-            color: '#fff',
-            fontWeight: 'bold',
-            margin: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s ease',
-            opacity: isButtonDisabled ? 0.7 : 1,
-          }}
+          className="action-button"
+          style={{ background: themes[theme].buttonGradient }}
         >
           Старт
         </button>
         <br />
         <button
           onClick={handleReset}
-          style={{
-            padding: '12px 28px',
-            fontSize: '18px',
-            cursor: 'pointer',
-            borderRadius: '20px',
-            border: 'none',
-            background: themes[theme].buttonGradient,
-            color: '#fff',
-            fontWeight: 'bold',
-            margin: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s ease',
-          }}
+          className="action-button"
+          style={{ background: themes[theme].buttonGradient }}
         >
           Сброс 
         </button>
@@ -280,37 +191,24 @@ function App() {
         <br/>
         <button
           onClick={handleRetake}
-          style={{
-            padding: '12px 28px',
-            fontSize: '18px',
-            cursor: 'pointer',
-            borderRadius: '20px',
-            border: 'none',
-            background: themes[theme].buttonGradient,
-            color: '#fff',
-            fontWeight: 'bold',
-            margin: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s ease',
-          }}
+          className="action-button"
+          style={{ background: themes[theme].buttonGradient }}
         >
           Попробовать ещё раз
         </button>
 
         {showMessage && <>
-          <h2 style={{ 
-            color: themes[theme].text, 
-            textShadow: '1px 1px 0 #fff, 2px 2px 4px rgba(0,0,0,0.2)', 
-            fontFamily: 'Comic Sans MS, Comic Sans, cursive' 
-          }}>Ты справился, {localStorage.getItem('userName')} 💪</h2>
-          <div style={{ fontSize: '6rem', textAlign: 'center', marginTop: '10px', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))' }}>🍬</div>
+          <h2 className="success-message" style={{ color: themes[theme].text }}>
+            Ты справился, {localStorage.getItem('userName')} 💪
+          </h2>
+          <div className="candy-emoji">🍬</div>
         </>}
 
-        {isRunning && <h2 style={{ 
-          color: themes[theme].text, 
-          textShadow: '1px 1px 0 #fff, 2px 2px 4px rgba(0,0,0,0.2)', 
-          fontFamily: 'Comic Sans MS, Comic Sans, cursive' 
-        }}>{localStorage.getItem('userName')}, осталось {count} сек</h2>}
+        {isRunning && (
+          <h2 className="timer-text" style={{ color: themes[theme].text }}>
+            {localStorage.getItem('userName')}, осталось {count} сек
+          </h2>
+        )}
       </div>
     </ThemeContext.Provider>
   )
