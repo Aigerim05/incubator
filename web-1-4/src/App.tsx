@@ -1,59 +1,49 @@
-import { useState } from 'react'
+import { useContext } from 'react'
 import './App.css'
 import FeedbackForm from './components/FeedbackForm'
 import FeedbackList from './components/FeedbackList'
 
-export type Feedback = {
-  id: number
-  text: string
-  votes: number
-}
+import { ThemeContext} from './context/ThemeContext'
+import { usefeedbackStore } from './store/feedbackStore'
+import type { feedbackStore } from './store/feedbackStore'
 
-export default function App() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
-  const [nextId, setNextId] = useState(1)
 
-  const handleAdd = (text: string) => {
-    setFeedbacks([{ id: nextId, text, votes: 0 }, ...feedbacks])
-    setNextId(nextId + 1)
+function App() {
+  
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("ThemeContext not found");
+  const { theme, toggleTheme } = ctx;
+
+  const total = usefeedbackStore((state: feedbackStore) => state.totalCount());
+  const feedbacks = usefeedbackStore((state: feedbackStore) => state.feedbacks);
+
+  const handleAddFeedback = (name: string, feedback: string) => {
+    usefeedbackStore.getState().addFeedback({id: feedbacks.length + 1, name, feedback, like: 0, dislike: 0})
   }
 
-  const handleVote = (id: number) => {
-    setFeedbacks(fbs =>
-      fbs.map(fb =>
-        fb.id === id ? { ...fb, votes: fb.votes + 1 } : fb
-      )
-    )
+  const handleLike = (id: number) => {
+    usefeedbackStore.getState().addLike(id)
+  }
+  const handleDislike = (id: number) => {
+    usefeedbackStore.getState().addDislike(id)
   }
 
   const handleDelete = (id: number) => {
-    setFeedbacks(fbs => fbs.filter(fb => fb.id !== id))
+   usefeedbackStore.getState().deleteFeedback(id)
   }
 
   return (
-    <div style={{
-      maxWidth: 1000,
-      margin: '40px auto',
-      padding: 40,
-      background: 'linear-gradient(120deg, #f0f6ff 0%, #f0fdf4 100%)',
-      borderRadius: 16,
-      boxShadow: '0 4px 24px #4f8cff22',
-      border: '2px solid #4f8cff'
-    }}>
-      <h1 style={{
-        textAlign: 'center',
-        marginBottom: 32,
-        fontSize: 32,
-        fontWeight: 800,
-        background: 'linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        letterSpacing: 1
-      }}>
-        Feedback Board
-      </h1>
-      <FeedbackForm onAdd={handleAdd} />
-      <FeedbackList feedbacks={feedbacks} onVote={handleVote} onDelete={handleDelete} />
-    </div>
+      <div className={theme}>
+        <FeedbackForm onAdd={handleAddFeedback} />
+        <FeedbackList feedbacks={feedbacks} onLike={handleLike} onDislike={handleDislike} onDelete={handleDelete}/>
+
+        <p>Total feedbacks: {total}</p>
+        <button onClick={toggleTheme}>Toggle Theme</button>
+
+
+      </div>
+      
   )
 }
+
+export default App

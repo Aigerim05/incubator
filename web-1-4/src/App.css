@@ -1,7 +1,103 @@
+/* Light theme (default) */
+:root {
+  --bg: #f7f8fa;
+  --text: #222;
+  --card-bg: #fff;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --input-bg: #fff;
+  --input-border: #d1d5db;
+  --input-focus: #6366f1;
+  --button-bg: #6366f1;
+  --button-hover: #4f46e5;
+  --button-text: #fff;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.feedback-card, form {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+input[type="text"] {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+}
+
+input[type="text"]:focus {
+  border: 1.5px solid var(--input-focus);
+}
+
+button {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+button:hover {
+  background: var(--button-hover);
+}
+
+/* Dark theme */
+.dark-theme {
+  --bg: #18181b;
+  --text: #f3f4f6;
+  --card-bg: #232336;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --input-bg: #232336;
+  --input-border: #444459;
+  --input-focus: #818cf8;
+  --button-bg: #818cf8;
+  --button-hover: #6366f1;
+  --button-text: #fff;
+}
+
+.dark-theme body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dark-theme .feedback-card,
+.dark-theme form {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.dark-theme input[type="text"] {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+}
+
+.dark-theme input[type="text"]:focus {
+  border: 1.5px solid var(--input-focus);
+}
+
+.dark-theme button {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.dark-theme button:hover {
+  background: var(--button-hover);
+}
+
+/* Existing root styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+.feedback-card h3, .feedback-card p {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.dark-theme .feedback-card {
+  color: #fff;
 }
 
