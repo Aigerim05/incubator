@@ -5,12 +5,13 @@ type FeedbackListProps = {
     feedbacks: Feedback[],
     onLike: (id: number) => void,
     onDislike: (id: number) => void,
-    onDelete: (id: number) => void
+    onDelete: (id: number) => void,
+    onEdit: (id: number, text: string) => void
 }
 
 
 
-export default function FeedbackList({feedbacks, onLike, onDislike, onDelete}: FeedbackListProps) {
+export default function FeedbackList({feedbacks, onLike, onDislike, onDelete, onEdit}: FeedbackListProps) {
     if(feedbacks.length === 0) {
         return <p>No feedbacks yet</p>
     }
@@ -19,7 +20,7 @@ export default function FeedbackList({feedbacks, onLike, onDislike, onDelete}: F
     return (
         <ul>
             {feedbacks.map((feedback) => (
-                <FeedbackItem key={feedback.id} feedback={feedback} onLike={onLike} onDislike={onDislike} onDelete={onDelete} />
+                <FeedbackItem key={feedback.id} feedback={feedback} onLike={onLike} onDislike={onDislike} onDelete={onDelete} onEdit={onEdit} />
             ))}
         </ul>
     )

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import type { StateCreator } from 'zustand';
 import type { Feedback } from '../types';
 
 
@@ -8,8 +7,10 @@ export type feedbackStore = {
     addFeedback: (feedback: Feedback) => void;
     deleteFeedback: (id: number) => void;
     totalCount: () => number;
-    addLike: (id: number) => void;        // <-- add this
+    addLike: (id: number) => void;       
     addDislike: (id: number) => void; 
+    getSortedByLikes: () => Feedback[];
+    editFeedback: (id: number, updatedText: string) => void;
 }
 
 export const usefeedbackStore = create<feedbackStore>((set, get) => ({
@@ -35,5 +36,16 @@ export const usefeedbackStore = create<feedbackStore>((set, get) => ({
             )
         }))
     },
+    getSortedByLikes: () => {
+        return [...get().feedbacks].sort((a, b) => b.like - a.like);
+    },
+
+    editFeedback: (id: number, updatedText: string) => {
+        set((state) => ({
+            feedbacks: state.feedbacks.map(f => 
+                f.id === id ? {...f, feedback: updatedText} : f
+            )
+        }))
+    }
 }));
 
