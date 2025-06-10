@@ -8,16 +8,16 @@ export function useRealtimePlayers(): Player[] {
   useEffect(() => {
     const playersRef = ref(db, 'players');
     const unsubscribe = onValue(playersRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const result = Object.values(data) as Player[];
-        setPlayers(result);
+      const val = snapshot.val();
+      if (val) {
+        const parsedPlayers = Object.values(val) as Player[];
+        setPlayers(parsedPlayers);
       } else {
         setPlayers([]);
       }
     });
 
-    return () => unsubscribe(); // отписка при размонтировании
+    return () => unsubscribe();
   }, []);
 
   return players;
