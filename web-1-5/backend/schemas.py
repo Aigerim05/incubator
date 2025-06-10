@@ -1,18 +1,18 @@
 from pydantic import BaseModel
 
-# Base schema for input (no ID yet)
+# ✅ Shared properties (used for both creation and response)
 class ItemBase(BaseModel):
     name: str
     password: str
     description: str
 
-# Schema for creating a new item (same as base)
+# ✅ Used when creating a new item (from POST body)
 class ItemCreate(ItemBase):
     pass
 
-# Schema for responses (includes ID)
+# ✅ Used when returning item data from the database
 class Item(ItemBase):
     id: int
 
     class Config:
-        pass
+        orm_mode = True  # Important to read data from SQLAlchemy model

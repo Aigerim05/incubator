@@ -1,50 +1,59 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from schemas import Item, ItemCreate
 import crud
+from contextlib import asynccontextmanager
+from init_db import create_tables
+from schemas import Item, ItemCreate
+from database import get_db
+from sqlalchemy.orm import Session
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    yield
 
-# Allow React frontend to access
+app = FastAPI(lifespan=lifespan)
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173"],  # React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Create
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 @app.post("/items", response_model=Item)
-def create_item(item: ItemCreate):
-    return crud.create_item(item)
+def create(item: ItemCreate, db: Session = Depends(get_db)):
+    return crud.create_item(db, item)
 
-# Read all
 @app.get("/items", response_model=List[Item])
-def read_items():
-    return crud.get_items()
+def read_items(db: Session = Depends(get_db)):
+    return crud.get_items(db)
 
-# Read one
 @app.get("/items/{item_id}", response_model=Item)
-def read_item(item_id: int):
-    item = crud.get_item(item_id)
+def read_item(item_id: int, db: Session = Depends(get_db)):
+    item = crud.get_item(db, item_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-# Update
 @app.put("/items/{item_id}", response_model=Item)
-def update_item(item_id: int, item: ItemCreate):
-    updated = crud.update_item(item_id, item)
+def update(item_id: int, item: ItemCreate, db: Session = Depends(get_db)):
+    updated = crud.update_item(db, item_id, item)
     if updated is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return updated
 
-# Delete
 @app.delete("/items/{item_id}")
-def delete_item(item_id: int):
-    success = crud.delete_item(item_id)
+def delete(item_id: int, db: Session = Depends(get_db)):
+    success = crud.delete_item(db, item_id)
     if not success:
         raise HTTPException(status_code=404, detail="Item not found")
     return {"message": "Item deleted"}
+

@@ -1,42 +1,46 @@
+from sqlalchemy.orm import Session
 from typing import List, Optional
-from schemas import Item, ItemCreate
 
-# In-memory items list
-items: List[dict] = []
-current_id = 1
+from models import Item
+from schemas import ItemCreate, Item as ItemSchema
 
-def create_item(item_data: ItemCreate) -> Item:
-    global current_id
-    item = {
-        'id': current_id,
-        'name': item_data.name,
-        'password': item_data.password,
-        'description': item_data.description
-    }
-    items.append(item)
-    current_id += 1
-    return Item(**item)
+# Create an item
+def create_item(db: Session, item_data: ItemCreate) -> ItemSchema:
+    db_item = Item(
+        name=item_data.name,
+        password=item_data.password,
+        description=item_data.description
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
-def get_items() -> List[Item]:
-    return [Item(**item) for item in items]
+# Get all items
+def get_items(db: Session) -> List[ItemSchema]:
+    return db.query(Item).all()
 
-def get_item(item_id: int) -> Optional[Item]:
-    for item in items:
-        if item['id'] == item_id:
-            return Item(**item)
-    return None
+# Get a single item by ID
+def get_item(db: Session, item_id: int) -> Optional[ItemSchema]:
+    return db.query(Item).filter(Item.id == item_id).first()
 
-def update_item(item_id: int, item_data: ItemCreate) -> Optional[Item]:
-    for item in items:
-        if item['id'] == item_id:
-            item['name'] = item_data.name
-            item['password'] = item_data.password
-            item['description'] = item_data.description
-            return Item(**item)
-    return None
+# Update an item
+def update_item(db: Session, item_id: int, item_data: ItemCreate) -> Optional[ItemSchema]:
+    db_item = db.query(Item).filter(Item.id == item_id).first()
+    if db_item is None:
+        return None
+    db_item.name = item_data.name
+    db_item.password = item_data.password
+    db_item.description = item_data.description
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
-def delete_item(item_id: int) -> bool:
-    global items
-    original_len = len(items)
-    items = [item for item in items if item['id'] != item_id]
-    return len(items) < original_len
+# Delete an item
+def delete_item(db: Session, item_id: int) -> bool:
+    db_item = db.query(Item).filter(Item.id == item_id).first()
+    if db_item is None:
+        return False
+    db.delete(db_item)
+    db.commit()
+    return True
